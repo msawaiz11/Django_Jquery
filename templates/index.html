@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap 5 Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+
+
+  <div id="tab1" contenteditable="true">Tab 1 Content. i know that </div>
+<div id="tab2" contenteditable="true">Tab 2 Content. i can do it.</div>
+<button id="download-btn">Download DOCX</button>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#download-btn').click(function() {
+        var tab1Content = $('#tab1').html();
+        var tab2Content = $('#tab2').html();
+        console.log(tab1Content);
+     
+        console.log(tab2Content);
+
+        $.ajax({
+            type: 'POST',
+            url: '/download_docx/',
+            data: {
+                'tab1_content': tab1Content,
+                'tab2_content': tab2Content,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(data) {
+                var blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.docx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        });
+    });
+});
+
+</script>
+
+
+</body>
+</html>
